@@ -1,0 +1,21 @@
+{
+    "preprocess": {
+        "phtp_file": "",
+        "phtp_list": [],
+        "cvrt_file": "",
+        "cvrt_list": [],
+        "sample_id_col": "",
+        "sample_idx": "",
+        "trans_dict": {
+            "log10": [],
+            "log2": [],
+            "ivrk": [],
+            "orig": []
+        },
+        "transpose": true,
+        "stdv_times": 3,
+        "output_prefix": "",
+        "_temp": []
+    },
+    "qtlmapping": {}
+}

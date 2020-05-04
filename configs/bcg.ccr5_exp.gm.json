@@ -1,0 +1,40 @@
+{
+    "preprocess": {
+        "pntp_file": "../../inputs/phenotypes/ccr5_expression.Dataset_5_april.csv",
+        "cvrt_file": "",
+        "output_pre": "bcg.ccr5_exp.gm",
+        "sample_id_col": "Original_rownumbers",
+        "pntp_list": [
+            "GM_CCR5P_CD4", "GM_CCR5P_CD45", "GM_CCR5P_CD8", "GM_CCR5P_CM_CD8",
+            "GM_CCR5P_EM_CD8", "GM_CCR5P_G", "GM_CCR5P_L", "GM_CCR5P_M",
+            "GM_CCR5P_mTreg", "GM_CCR5P_Naive_CD8", "GM_CCR5P_nTreg",
+            "GM_CCR5P_RAnR7n", "GM_CCR5P_RAnR7n_(EM)_CD8", "GM_CCR5P_RAnR7p",
+            "GM_CCR5P_RAp25p", "GM_CCR5P_RApR7n", "GM_CCR5P_RApR7n_(EM)_CD8",
+            "GM_CCR5P_RApR7p", "GM_CCR5P_TEM"
+        ],
+        "cvrt_list": [
+            "Sex", "Age_at_visit"
+        ],
+        "sample_idx": "0-323",
+        "tran_dict": {
+            "log10": [
+                "GM_CCR5P_CD4", "GM_CCR5P_CD45", "GM_CCR5P_CD8",
+                "GM_CCR5P_CM_CD8", "GM_CCR5P_EM_CD8", "GM_CCR5P_G",
+                "GM_CCR5P_L", "GM_CCR5P_M", "GM_CCR5P_mTreg",
+                "GM_CCR5P_Naive_CD8", "GM_CCR5P_nTreg", "GM_CCR5P_RAnR7n",
+                "GM_CCR5P_RAnR7n_(EM)_CD8", "GM_CCR5P_RAnR7p",
+                "GM_CCR5P_RApR7n_(EM)_CD8", "GM_CCR5P_RAp25p",
+                "GM_CCR5P_RApR7n", "GM_CCR5P_RApR7p", "GM_CCR5P_TEM"
+            ],
+            "log2": [
+            ],
+            "ivrk": [
+            ],
+            "orig": ["Age_at_visit", "Sex"]
+        },
+        "transpose": false,
+        "save_to_dir": null,
+        "stdv_times": 3,
+        "temp": [ ]
+    }
+}

@@ -42,7 +42,7 @@ merge_pctt <- function(data, ccr5_idx, bimk_idx, cvar_idx, mthd="spearman") {
     rownames(cor_dtfm) <- bimk_name_pool
 
     return(cor_dtfm)
-    # If you want handle the results from one function to a variable, you have
+    # If you want to hand the results from one function to a variable, you have
     # use the return key words not print()
 }
 
@@ -50,7 +50,7 @@ merge_pctt <- function(data, ccr5_idx, bimk_idx, cvar_idx, mthd="spearman") {
 # A data.frame for testing
 dtfm <- data.frame(
    ccr5_a=1:10, ccr5_b=1:10, ccr5_c=1:10, bimk_a=1:10, bimk_b=1:10,
-   bimk_c=1:10, age=21:30, gender=c(rep(1, 4), rep(2, 6))
+   bimk_c=1:10, age=21:30, gender=c(rep("m", 4), rep("f", 6))
 )
 
 pctt <- merge_pctt(dtfm, 1:3, 4:6, 7:8)
