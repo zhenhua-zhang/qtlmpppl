@@ -9,6 +9,9 @@ import pandas as pd
 import seaborn as sbn
 import statsmodels.formula.api as smf
 
+logger = logging.getLogger("matplotlib")
+logger.setLevel(logging.ERROR)
+
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
@@ -29,7 +32,7 @@ def get_args():
     parser.add_argument("-P", "--phtp-name", dest="phtp_name", nargs="*", help="The name of phenotype for which the script draws the boxplot.")
     parser.add_argument("-G", "--snps-indx", dest="snps_indx", nargs="*", help="The genotype id for which the script draw boxplot.")
     parser.add_argument("-C", "--cvrt-name", dest="cvrt_name", nargs="*", help="The name of covriates by which the script correct.")
-    parser.add_argument("-o", "--output-prefix", dest="output_prefix", help="The prefix for the output aka boxplot")
+    parser.add_argument("-o", "--output-prefix", dest="output_dir", help="The prefix for the output aka boxplot")
 
     return parser
 
@@ -37,7 +40,7 @@ def get_args():
 class BoxPlot:
 
     def __init__(self, phtp_file, phtp_name, gntp_file, snps_indx, gntp_info_file,
-                 cvrt_file=None, cvrt_name=None, output_prefix="./"):
+                 cvrt_file=None, cvrt_name=None, output_dir="./"):
         self.phtp_file = phtp_file
         self.phtp_name = phtp_name
         self.gntp_file = gntp_file
@@ -46,11 +49,19 @@ class BoxPlot:
         self.cvrt_file = cvrt_file
         self.cvrt_name = cvrt_name
 
+        self.output_dir = output_dir
+
         self.phtp_dtfm = None
         self.cvrt_dtfm = None
         self.gntp_dtfm = None
         self.gntp_info_dtfm = None
         self.dtfm = None
+
+    @staticmethod
+    def _pr_clear():
+        plt.cla()
+        plt.clf()
+        plt.close()
 
     @staticmethod
     def _pr_load_file(file_path, **kwargs):
@@ -96,7 +107,6 @@ class BoxPlot:
 
     def _pr_encode_gntp(self):
         for gntp in self.snps_indx:
-            logger.debug(self.gntp_info_dtfm.loc[gntp])
             eff, alt = self.gntp_info_dtfm.loc[gntp, ["EffectAllele", "AlternativeAllele"]]
             dosage2code_dict = {0: alt + alt, 1: alt + eff, 2: eff + eff}
             self.dtfm.loc[gntp + "_code"] = self.dtfm \
@@ -116,17 +126,30 @@ class BoxPlot:
         for phtp in self.phtp_name:
             for gntp in self.snps_indx:
                 gntp_code = gntp + "_code"
-                dtfm = self.dtfm.loc[[phtp, gntp_code]].transpose()
-                axes = sbn.boxplot(x=gntp_code, y=phtp, data=dtfm, width=0.4)
-                axes = sbn.swarmplot(x=gntp_code, y=phtp, data=dtfm, color=".5")
-                fig = axes.get_figure()
+                dtfm = self.dtfm.loc[[phtp, gntp_code]]
 
-                fig_name = ".".join([phtp, gntp_code, svfmt])
+                chrom, pos, eff, alt, *_ = self.gntp_info_dtfm.loc[gntp, ]
+                allele_code = [alt + alt, alt + eff, eff + eff]
+
+                allele_count = dtfm.loc[gntp_code].value_counts()
+                xtick_labels = ["{}({})".format(aa, allele_count[aa]) for aa in allele_code if aa in allele_count]
+                allele_code = [aa for aa in allele_code if aa in allele_count]
+
+                axes = sbn.boxplot(x=gntp_code, y=phtp, data=dtfm.transpose(), width=0.4, order=allele_code)
+                axes = sbn.swarmplot(x=gntp_code, y=phtp, data=dtfm.transpose(), color=".5", order=allele_code)
+
+                axes.set_title("{}({})".format(phtp, gntp))
+                axes.set_xlabel("{}({},{},{}>{})".format(gntp, chrom, pos, alt, eff))
+                axes.set_ylabel(phtp)
+                axes.set_xticklabels(xtick_labels)
+
+                fig_name = ".".join(["boxplot", phtp, gntp_code, svfmt])
+                fig_name = self.output_dir.strip("/") + "/" + fig_name
+
+                fig = axes.get_figure()
                 fig.savefig(fig_name, width=width, height=height)
 
-                plt.cla()
-                plt.clf()
-                plt.close()
+                self._pr_clear()
 
     def init(self):
         self._pr_make_dtfm()
@@ -141,8 +164,6 @@ class BoxPlot:
         self._pr_draw_boxplots()
         return self
 
-    def save_results(self):
-        return self
 
 def main():
     args = get_args().parse_args()
@@ -154,11 +175,12 @@ def main():
     cvrt_file = args.cvrt_file
     cvrt_name = args.cvrt_name
 
-    box_plot = BoxPlot(phtp_file, phtp_name, gntp_file, snps_indx, gntp_info_file, cvrt_file, cvrt_name)
+    output_dir = args.output_dir
 
-    box_plot.init() \
-            .draw_boxplot() \
-            .save_results()
+    box_plot = BoxPlot(
+        phtp_file, phtp_name, gntp_file, snps_indx, gntp_info_file, cvrt_file,
+        cvrt_name, output_dir=output_dir)
+    box_plot.init().draw_boxplot()
 
 
 if __name__ == "__main__":
