@@ -3,4 +3,5 @@
 .vim
 .pylintrc
 
+**/.rbcsignore
 **/*.pyc
