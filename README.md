@@ -4,14 +4,6 @@
 
 ```
 
-~/Documents/projects/wp_hiv_ccr5/scripts
-├── collect_and_report.py  [Collecting outputs of qtl_mapping.r and generate a report]
-├── preprocessing.py       [Preprocessing input file for qtl_mapping.r]
-├── qtl_mapping.r          [Do QTL mapping exploiting MatrixEQTL package]
-├── README.md              [This readme file]
-└── run.sh                 [Execute all steps in one script.]
-
-0 directories, 5 files
 ```
 
 
@@ -75,14 +67,6 @@ Questions:
 ## Epigenetic
 
 ## Reported SNPs
-
-|------------|------------------------|----------------|----------------------|-------------------|-------------------------------------------|---------|--------------------|------------------------------------|------------------------|------------------------------------|---------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SNP ID     | Position               | Trait (200HIV) | p-value (200HIV)     | Beta (200HIV)     | Disease or trait (public)                 | p-value | Odds ratio or beta | Sample size (public)               | Reported Gene (public) | Strongest SNP-risk allele (public) | Alleles | Risk Allele Frequency | Publication                                                                                                                                                              |
-|------------|------------------------|----------------|----------------------|-------------------|-------------------------------------------|---------|--------------------|------------------------------------|------------------------|------------------------------------|---------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| rs79815064 | chr3:46277577-46277577 | RAnR7n_EM_CD8  | 1.84958941322281e-10 | 0.627370236574362 | Macrophage inflammatory protein 1b levels | 3E-126  | 0.5505             | 8,243 Finnish ancestry individuals | Not reported           | rs79815064-G                       | A/G     | Not reported          | Ahola-Olli AV et al. Genome-wide Association Study Identifies 27 Loci Influencing Concentrations of Circulating Cytokines and Growth Factors. Am J Hum Genet. 2016-12-13 |
-| rs4317138  |                        |                |                      |                   | HIV-1 virus load                          |         |                    |                                    |                        |                                    |         |                       | Polymorphisms of large effect explain the majority of the host genetic contribution of variation of HIV-1 virus load                                                     |
-| rs1015164  |                        |                |                      |                   | HIV-1 virus load                          |         |                    |                                    |                        |                                    |         |                       | Polymorphisms of large effect explain the majority of the host genetic contribution of variation of HIV-1 virus load                                                     |
-|------------|------------------------|----------------|----------------------|-------------------|-------------------------------------------|---------|--------------------|------------------------------------|------------------------|------------------------------------|---------|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
 
 
