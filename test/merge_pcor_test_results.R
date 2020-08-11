@@ -15,9 +15,9 @@ merge_pctt <- function(data, ccr5_idx, bimk_idx, cvar_idx, mthd="spearman") {
     # cvar_idx: the index of covariates
     # mthd: the method to be used in pcor.test()
 
-    ccr5_dtfm <- data[ccr5_idx]  # CCR5 expression data
-    bimk_dtfm <- data[bimk_idx]  # Levels of biomarks
-    cvar_dtfm <- data[cvar_idx]  # Co-variates
+    ccr5_dtfm <- data[, ccr5_idx]  # CCR5 expression data
+    bimk_dtfm <- data[, bimk_idx]  # Levels of biomarks
+    cvar_dtfm <- data[, cvar_idx]  # Co-variates
 
     ccr5_name_pool <- colnames(ccr5_dtfm)
     bimk_name_pool <- colnames(bimk_dtfm)
@@ -50,7 +50,7 @@ merge_pctt <- function(data, ccr5_idx, bimk_idx, cvar_idx, mthd="spearman") {
 # A data.frame for testing
 dtfm <- data.frame(
    ccr5_a=1:10, ccr5_b=1:10, ccr5_c=1:10, bimk_a=1:10, bimk_b=1:10,
-   bimk_c=1:10, age=21:30, gender=c(rep("m", 4), rep("f", 6))
+   bimk_c=1:10, age=21:30, gender=c(1, 1, 0, 1, 1, 0, 1, 0, 0, 1)
 )
 
 pctt <- merge_pctt(dtfm, 1:3, 4:6, 7:8)

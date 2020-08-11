@@ -1,0 +1,129 @@
+#chr - ID label start end color
+# cell type IFM
+chr - CD45          CD45          0 882552473 01
+chr - CD4           CD4           0 882552473 02
+chr - CD8           CD8           0 882552473 03
+chr - CM_CD8        CM_CD8        0 882552473 04
+chr - EM_CD8        EM_CD8        0 882552473 05
+chr - G             G             0 882552473 06
+chr - L             L             0 882552473 07
+chr - M             M             0 882552473 08
+chr - mTreg         mTreg         0 882552473 09
+chr - Naive_CD8     Naive_CD8     0 882552473 10
+chr - nTreg         nTreg         0 882552473 11
+chr - RAnR7n        RAnR7n        0 882552473 12
+chr - RAnR7n_EM_CD8 RAnR7n_EM_CD8 0 882552473 13
+chr - RAnR7p        RAnR7p        0 882552473 14
+chr - RAp25p        RAp25p        0 882552473 15
+chr - RApR7n_EM_CD8 RApR7n_EM_CD8 0 882552473 16
+chr - RApR7n        RApR7n        0 882552473 17
+chr - RApR7p        RApR7p        0 882552473 18
+chr - TEM           TEM           0 882552473 19
+
+band CD45 chr02 chr02 0         243199373 chr2
+band CD45 chr03 chr03 243199373 441221803 chr3
+band CD45 chr04 chr04 441221803 632376079 chr4
+band CD45 chr11 chr11 632376079 767382595 chr11
+band CD45 chr13 chr13 767382595 882552473 chr13
+
+band CD4 chr02 chr02 0         243199373 chr2
+band CD4 chr03 chr03 243199373 441221803 chr3
+band CD4 chr04 chr04 441221803 632376079 chr4
+band CD4 chr11 chr11 632376079 767382595 chr11
+band CD4 chr13 chr13 767382595 882552473 chr13
+
+band CD8 chr02 chr02 0         243199373 chr2
+band CD8 chr03 chr03 243199373 441221803 chr3
+band CD8 chr04 chr04 441221803 632376079 chr4
+band CD8 chr11 chr11 632376079 767382595 chr11
+band CD8 chr13 chr13 767382595 882552473 chr13
+
+band CM_CD8 chr02 chr02 0         243199373 chr2
+band CM_CD8 chr03 chr03 243199373 441221803 chr3
+band CM_CD8 chr04 chr04 441221803 632376079 chr4
+band CM_CD8 chr11 chr11 632376079 767382595 chr11
+band CM_CD8 chr13 chr13 767382595 882552473 chr13
+
+band G chr02 chr02 0         243199373 chr2
+band G chr03 chr03 243199373 441221803 chr3
+band G chr04 chr04 441221803 632376079 chr4
+band G chr11 chr11 632376079 767382595 chr11
+band G chr13 chr13 767382595 882552473 chr13
+
+band L chr02 chr02 0         243199373 chr2
+band L chr03 chr03 243199373 441221803 chr3
+band L chr04 chr04 441221803 632376079 chr4
+band L chr11 chr11 632376079 767382595 chr11
+band L chr13 chr13 767382595 882552473 chr13
+
+band M chr02 chr02 0         243199373 chr2
+band M chr03 chr03 243199373 441221803 chr3
+band M chr04 chr04 441221803 632376079 chr4
+band M chr11 chr11 632376079 767382595 chr11
+band M chr13 chr13 767382595 882552473 chr13
+
+band mTreg chr02 chr02 0         243199373 chr2
+band mTreg chr03 chr03 243199373 441221803 chr3
+band mTreg chr04 chr04 441221803 632376079 chr4
+band mTreg chr11 chr11 632376079 767382595 chr11
+band mTreg chr13 chr13 767382595 882552473 chr13
+
+band Naive_CD8 chr02 chr02 0         243199373 chr2
+band Naive_CD8 chr03 chr03 243199373 441221803 chr3
+band Naive_CD8 chr04 chr04 441221803 632376079 chr4
+band Naive_CD8 chr11 chr11 632376079 767382595 chr11
+band Naive_CD8 chr13 chr13 767382595 882552473 chr13
+
+band nTreg chr02 chr02 0         243199373 chr2
+band nTreg chr03 chr03 243199373 441221803 chr3
+band nTreg chr04 chr04 441221803 632376079 chr4
+band nTreg chr11 chr11 632376079 767382595 chr11
+band nTreg chr13 chr13 767382595 882552473 chr13
+
+band RAnR7n chr02 chr02 0         243199373 chr2
+band RAnR7n chr03 chr03 243199373 441221803 chr3
+band RAnR7n chr04 chr04 441221803 632376079 chr4
+band RAnR7n chr11 chr11 632376079 767382595 chr11
+band RAnR7n chr13 chr13 767382595 882552473 chr13
+
+band RAnR7n_EM_CD8 chr02 chr02 0         243199373 chr2
+band RAnR7n_EM_CD8 chr03 chr03 243199373 441221803 chr3
+band RAnR7n_EM_CD8 chr04 chr04 441221803 632376079 chr4
+band RAnR7n_EM_CD8 chr11 chr11 632376079 767382595 chr11
+band RAnR7n_EM_CD8 chr13 chr13 767382595 882552473 chr13
+
+band RAnR7p chr02 chr02 0         243199373 chr2
+band RAnR7p chr03 chr03 243199373 441221803 chr3
+band RAnR7p chr04 chr04 441221803 632376079 chr4
+band RAnR7p chr11 chr11 632376079 767382595 chr11
+band RAnR7p chr13 chr13 767382595 882552473 chr13
+
+band RAp25p chr02 chr02 0         243199373 chr2
+band RAp25p chr03 chr03 243199373 441221803 chr3
+band RAp25p chr04 chr04 441221803 632376079 chr4
+band RAp25p chr11 chr11 632376079 767382595 chr11
+band RAp25p chr13 chr13 767382595 882552473 chr13
+
+band RApR7n_EM_CD8 chr02 chr02 0         243199373 chr2
+band RApR7n_EM_CD8 chr03 chr03 243199373 441221803 chr3
+band RApR7n_EM_CD8 chr04 chr04 441221803 632376079 chr4
+band RApR7n_EM_CD8 chr11 chr11 632376079 767382595 chr11
+band RApR7n_EM_CD8 chr13 chr13 767382595 882552473 chr13
+
+band RApR7n chr02 chr02 0         243199373 chr2
+band RApR7n chr03 chr03 243199373 441221803 chr3
+band RApR7n chr04 chr04 441221803 632376079 chr4
+band RApR7n chr11 chr11 632376079 767382595 chr11
+band RApR7n chr13 chr13 767382595 882552473 chr13
+
+band RApR7p chr02 chr02 0         243199373 chr2
+band RApR7p chr03 chr03 243199373 441221803 chr3
+band RApR7p chr04 chr04 441221803 632376079 chr4
+band RApR7p chr11 chr11 632376079 767382595 chr11
+band RApR7p chr13 chr13 767382595 882552473 chr13
+
+band TEM chr02 chr02 0         243199373 chr2
+band TEM chr03 chr03 243199373 441221803 chr3
+band TEM chr04 chr04 441221803 632376079 chr4
+band TEM chr11 chr11 632376079 767382595 chr11
+band TEM chr13 chr13 767382595 882552473 chr13

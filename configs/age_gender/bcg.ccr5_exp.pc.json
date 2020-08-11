@@ -1,0 +1,39 @@
+{
+    "preprocess": {
+        "phtp_file": "/home/umcg-zzhang/Documents/projects/wp_hiv_ccr5/inputs/phenotypes/ccr5_expression.Dataset_3_Aug.newid.rmotl.csv",
+        "phtp_list": [
+            "Pgated_CCR5P_CD4", "Pgated_CCR5P_CD45", "Pgated_CCR5P_CD8",
+            "Pgated_CCR5P_CM_CD8", "Pgated_CCR5P_EM_CD8", "Pgated_CCR5P_L",
+            "Pgated_CCR5P_M", "Pgated_CCR5P_mTreg", "Pgated_CCR5P_Naive_CD8",
+            "Pgated_CCR5P_nTreg", "Pgated_CCR5P_RAnR7n",
+            "Pgated_CCR5P_RAnR7n_EM_CD8", "Pgated_CCR5P_RAnR7p",
+            "Pgated_CCR5P_RApR7n", "Pgated_CCR5P_RApR7n_EM_CD8",
+            "Pgated_CCR5P_RApR7p", "Pgated_CCR5P_TEM"
+        ],
+        "cvrt_file": "",
+        "cvrt_list": ["Sex", "Age_at_visit"],
+        "sample_id_col": "ID_gn",
+        "sample_idx": "0-305",
+        "trans_dict": {
+            "log10": [
+                "Pgated_CCR5P_nTreg", "Pgated_CCR5P_Naive_CD8",
+                "Pgated_CCR5P_CM_CD8"
+            ],
+            "log2": [],
+            "ivrk": [],
+            "orig": [
+                "Age_at_visit", "Sex", "Pgated_CCR5P_CD4", "Pgated_CCR5P_CD45",
+                "Pgated_CCR5P_CD8", "Pgated_CCR5P_EM_CD8", "Pgated_CCR5P_L",
+                "Pgated_CCR5P_M", "Pgated_CCR5P_mTreg", "Pgated_CCR5P_RAnR7n",
+                "Pgated_CCR5P_RAnR7n_EM_CD8", "Pgated_CCR5P_RAnR7p",
+                "Pgated_CCR5P_RApR7n", "Pgated_CCR5P_RApR7n_EM_CD8",
+                "Pgated_CCR5P_RApR7p", "Pgated_CCR5P_TEM"
+            ]
+        },
+        "transpose": true,
+        "stdv_times": 3,
+        "output_prefix": "/home/umcg-zzhang/Documents/projects/wp_hiv_ccr5/outputs/age_gender/bcg.ccr5_exp.pc/preprocess/bcg.ccr5_exp.pc",
+        "_temp": []
+    },
+    "qtlmapping": {}
+}

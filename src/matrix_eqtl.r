@@ -42,7 +42,7 @@ make_sliced_data <- function(fp, foc = "NA", fss = 2000) {
 
 load_dtfm <- function(phtp_file, gntp_file, cvrt_file, ...) {
     phtp_dtfm <- read.table(phtp_file, header = TRUE, sep = "\t", row.names = 1)
-    gntp_dtfm <- read.table(gntp_file, header = TRUE, sep = " ", row.names = 1)
+    gntp_dtfm <- read.table(gntp_file, header = TRUE, sep = "\t", row.names = 1)
     cvrt_dtfm <- NULL
 
     candidate_samples <- intersect(colnames(gntp_dtfm), colnames(phtp_dtfm))
