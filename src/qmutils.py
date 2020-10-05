@@ -209,9 +209,10 @@ class BoxPlot:
 class PreProcess:
     """A class to pre-process phenotypes.
     """
-    def __init__(self, conf_file=None, phtp_file=None):
+    def __init__(self, conf_file=None, phtp_file=None, cvrt_file=None):
         self.conf_file = conf_file
         self.phtp_file = phtp_file
+        self.cvrt_file = cvrt_file
 
         self.configs = None   # Configurations parsed from self.conf_file
         self.dataframe = None # The data frame loaded from self.phtp_file
@@ -265,33 +266,47 @@ class PreProcess:
         if self.phtp_file is None:
             self.phtp_file = self.configs["preprocess"]["phtp_file"]
 
+        if self.cvrt_file is None:
+            self.cvrt_file = self.configs["preprocess"]["cvrt_file"]
+
         self.transpose = self.configs["preprocess"]["transpose"]
         self.output_prefix = self.configs["preprocess"]["output_prefix"]
         self.stdv_times = self.configs["preprocess"]["stdv_times"]
         self.sample_id_col = self.configs["preprocess"]["sample_id_col"]
 
-    def _pr_parse_sample_idx(self):
+    def _pr_parse_sample_id(self):
         self.sample_idx = self.configs["preprocess"]["sample_idx"]
 
-        sample_idx = []
-        for idx_range in self.sample_idx.split(","):
-            if idx_range:
-                if "-" in idx_range:
-                    start, stop = idx_range.split("-")
-                    sample_idx.extend(list(range(int(start), int(stop))))
+        if self.sample_idx is not None:
+            sample_idx = []
+            for idx_range in self.sample_idx.split(","):
+                if idx_range:
+                    if "-" in idx_range:
+                        start, stop = idx_range.split("-")
+                        sample_idx.extend(list(range(int(start), int(stop))))
+                    else:
+                        sample_idx.append(int(idx_range))
                 else:
-                    sample_idx.append(int(idx_range))
-            else:
-                logger.debug("Empty range of sample index")
+                    logger.debug("Empty range of sample index")
+            self.sample_idx = sample_idx
 
-        self.sample_idx = sample_idx
+        self.smpl_list = self.configs["preprocess"]["smpl_list"]
 
     def _pr_load_dtfm(self, **kwargs):
         sep = kwargs.pop("sep") if "sep" in kwargs else "\t"
 
-        self.dataframe = pd.read_csv(self.phtp_file, sep=sep, **kwargs)
+        phtp_dtfm = pd.read_csv(self.phtp_file, sep=sep, **kwargs)
+        if self.cvrt_file is None:
+            self.dataframe = phtp_dtfm
+        else:
+            cvrt_dtfm = pd.read_csv(self.cvrt_file, sep=sep, **kwargs)
+            self.dataframe = pd.merge(phtp_dtfm, cvrt_dtfm, on=self.sample_id_col)
+
         if self.sample_idx is not None:
             self.dataframe = self.dataframe.loc[self.sample_idx, :]
+
+        if self.smpl_list is not None:
+            self.dataframe = self.dataframe.loc[self.dataframe[self.sample_id_col].isin(self.smpl_list), :]
 
     @staticmethod
     def _inverse_rank(raw_list):
@@ -309,15 +324,18 @@ class PreProcess:
         self._pr_parse_misc()
         self._pr_parse_phtp_list()
         self._pr_parse_cvrt_list()
-        self._pr_parse_sample_idx()
+        self._pr_parse_sample_id()
         self._pr_parse_pntp_tran_dict()
 
         sep = kwargs.get("sep") if "sep" in kwargs else ","
         self._pr_load_dtfm(sep=sep)
         return self
 
-    def encode_sex(self, sex_col="Sex", mapping=None):
+    def encode_sex(self, sex_col=None, mapping=None, skip=False):
         """Encode gender from string into binary"""
+        if skip:
+            return self
+
         mapping = {"Male": 0, "Female": 1} if mapping is None else mapping
         self.dataframe[sex_col] = self.dataframe[sex_col].apply(lambda x: mapping[x])
 
@@ -367,8 +385,7 @@ class PreProcess:
             return self
 
         pca = PCA()
-        transformed_values = pca.fit_transform(self.dataframe.loc[:,
-                                                                  self.phtp_list])
+        transformed_values = pca.fit_transform(self.dataframe.loc[:, self.phtp_list])
 
         fig, axes = plt.subplots()
         axes.scatter(transformed_values[:, 0], transformed_values[:, 1], s=0.5)
