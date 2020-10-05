@@ -1,0 +1,20 @@
+#chr - ID label start end color
+
+# cell type IFM
+chr - CD45          CD45          0 198022430 01
+chr - CD4           CD4           0 198022430 02
+chr - CD8           CD8           0 198022430 03
+chr - CM_CD8        CM_CD8        0 198022430 04
+chr - EM_CD8        EM_CD8        0 198022430 05
+chr - L             L             0 198022430 07
+chr - M             M             0 198022430 08
+chr - mTreg         mTreg         0 198022430 09
+chr - Naive_CD8     Naive_CD8     0 198022430 10
+chr - nTreg         nTreg         0 198022430 11
+chr - RAnR7n        RAnR7n        0 198022430 12
+chr - RAnR7n_EM_CD8 RAnR7n_EM_CD8 0 198022430 13
+chr - RAnR7p        RAnR7p        0 198022430 14
+chr - RApR7n_EM_CD8 RApR7n_EM_CD8 0 198022430 16
+chr - RApR7n        RApR7n        0 198022430 17
+chr - RApR7p        RApR7p        0 198022430 18
+chr - TEM           TEM           0 198022430 19

@@ -73,3 +73,14 @@ Questions:
 # Note
 1. In 300BCG cohort, the measurement of GM of Naive_CD8 is not normal respect
    to normal distribution even converted by log10.
+
+
+
+# Results
+
+Date: 2020 Sep 07 13:20:22
+[x] 1. QTLs for each association analysis
+[ ] 2. Check if the associations are the same locus
+    [x] - Coloc
+    [ ] - PLINK clump
+3.

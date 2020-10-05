@@ -3,5 +3,8 @@
 .vim
 .pylintrc
 
+**/..ipynb_checkpoints/
+
 **/.rbcsignore
+**/*.log
 **/*.pyc

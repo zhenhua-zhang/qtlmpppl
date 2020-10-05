@@ -19,7 +19,7 @@ def get_args():
     parser.add_argument("-P", "--phtp-name", dest="phtp_name", nargs="*", help="The name of phenotype for which the script draws the boxplot.")
     parser.add_argument("-G", "--snps-indx", dest="snps_indx", nargs="*", help="The genotype id for which the script draw boxplot.")
     parser.add_argument("-C", "--cvrt-name", dest="cvrt_name", nargs="*", help="The name of covriates by which the script correct.")
-    parser.add_argument("-o", "--output-prefix", dest="output_dir", help="The prefix for the output aka boxplot")
+    parser.add_argument("-o", "--output-prefix", dest="output_dir", default="./", help="The prefix for the output aka boxplot")
 
     return parser
 

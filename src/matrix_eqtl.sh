@@ -2,10 +2,12 @@
 sbop=age_gender_cmv
 sbop=age_gender
 
-mm=hiv.ccr5_exp.gm
-mm=hiv.ccr5_exp.pc
-mm=bcg.ccr5_exp.pc
 #mm=bcg.ccr5_exp.gm
+#mm=bcg.ccr5_exp.pc
+#mm=hiv.ccr5_exp.gm
+#mm=hiv.ccr5_exp.pc
+mm=hiv.ccr5_exp.pc.mcv
+mm=hiv.ccr5_exp.gm.mcv
 
 qos=regular
 
@@ -15,7 +17,7 @@ sbatch \
     --cpus-per-task 1 \
     --job-name ${mm} \
     --qos ${qos} \
-    --output %j-%u-${mm} <<EOF
+    --output %j-%u-${mm}.log <<EOF
 #!/bin/bash
 
 source /apps/modules/modules.bashrc
@@ -47,11 +49,19 @@ if [[ \${host_name} =~ calculon ]] || [[ \${host_name} =~ umcg-node ]]; then
     module list
 fi
 
-
-Rscript \${scdir}/src/matrix_eqtl.r \
-    --gntp-file \${ipdir}/genotypes/300bcg/dosage/MatrixEQTL/300BCG.dosage.tsv.gz \
-    --gntp-info-file \${ipdir}/genotypes/300bcg/dosage/MatrixEQTL/300BCG.info.tsv.gz \
-    --phtp-file \${opdir}/${sbop}/${mm}/preprocess/${mm}.proc_phtp.tsv \
-    --cvrt-file \${opdir}/${sbop}/${mm}/preprocess/${mm}.proc_cvrt.tsv \
-    --save-pref \${opdir}/${sbop}/${mm}/qtlmapping/
+if [[ $mm =~ "hiv" ]]; then
+    Rscript \${scdir}/src/matrix_eqtl.r \
+        --gntp-file \${ipdir}/genotypes/200hiv/dosage/MatrixEQTL/200HIV_dosage.gz \
+        --gntp-info-file \${ipdir}/genotypes/200hiv/dosage/MatrixEQTL/200HIV_variantInfo.gz \
+        --phtp-file \${opdir}/${sbop}/${mm}/preprocess/${mm}.proc_phtp.tsv \
+        --cvrt-file \${opdir}/${sbop}/${mm}/preprocess/${mm}.proc_cvrt.tsv \
+        --save-pref \${opdir}/${sbop}/${mm}/qtlmapping/
+elif [[ $mm =~ 'bcg' ]]; then
+    Rscript \${scdir}/src/matrix_eqtl.r \
+        --gntp-file \${ipdir}/genotypes/300bcg/dosage/MatrixEQTL/300BCG.dosage.tsv.gz \
+        --gntp-info-file \${ipdir}/genotypes/300bcg/dosage/MatrixEQTL/300BCG.info.tsv.gz \
+        --phtp-file \${opdir}/${sbop}/${mm}/preprocess/${mm}.proc_phtp.tsv \
+        --cvrt-file \${opdir}/${sbop}/${mm}/preprocess/${mm}.proc_cvrt.tsv \
+        --save-pref \${opdir}/${sbop}/${mm}/qtlmapping/
+fi
 EOF

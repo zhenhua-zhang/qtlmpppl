@@ -53,6 +53,7 @@ def getopt():
     parser.add_argument('-S', '--snps-file-sep', dest='snps_file_sep', default=',', help='The filed seperator in the SNPs files. Default: %(default)s')
     parser.add_argument('-c', '--kept-cols-names', dest='kept_cols', metavar=('TRAIT-TYPE', 'CHROM', 'POS', 'P-VAL'), default=('gene', 'SequenceName', 'Position', 'pvalue'), nargs=4, help='The columns for the Circos input file. Default: %(default)s')
     parser.add_argument('-p', '--max-pval', dest='max_pval', default=5e-3, type=float, help='The minimum p-value used. Default: %(default)s')
+    parser.add_argument('--chrom-to-kept', dest='chrom_to_kept', default=None, type=int, nargs='*', help='The chrom id will be kept. Default: %(default)s')
     parser.add_argument('--chrom-max-pval', dest='chrom_max_pval', default=5e-8, type=float, help='The maximal p-value for a chrom to pickup. Default: %(default)s')
     parser.add_argument('-o', '--output-prefix', dest='output_pref', default='snps_density.per_cell_type', help='The output file. Default: %(default)s')
     parser.add_argument('-f', '--output-fmt', dest='output_fmt', default='ssv', choices=('ssv', 'csv', 'tsv'), help='The format of the output file. Default: %(default)s')
@@ -84,7 +85,7 @@ def update_record(row, shift_dict, index, trait_func=None):
     if trait_func:
         trait_type = trait_func(trait_type)
 
-    pos += pos + shift_dict[chrom]
+    pos += shift_dict[chrom]
     return pd.Series([trait_type, pos, pos, pval], index=index)
 
 
@@ -94,8 +95,7 @@ def update_trait_name(trait):
     return trait.replace('Pgated_CCR5P_', '') \
             .replace('GM_CCR5P_', '') \
             .replace('_log10', '') \
-            .replace('(', '') \
-            .replace(')', '')
+            .replace('_ivrk', '')
 
 
 def main():
@@ -109,10 +109,10 @@ def main():
     snps_file_sep = parser.snps_file_sep
     max_pval = parser.max_pval
     kept_cols = parser.kept_cols
+    chrom_to_kept = parser.chrom_to_kept
     chrom_max_pval = parser.chrom_max_pval
     output_pref = parser.output_pref
     output_fmt = parser.output_fmt
-
 
     _trait_col, chr_col, _pos_col, pval_col = kept_cols
 
@@ -124,7 +124,21 @@ def main():
 
     qry_str = '{} < {}'.format(pval_col, chrom_max_pval)
     band_chr_pl = circos_dtfm.query(qry_str)[chr_col].drop_duplicates()
+
+    if chrom_to_kept is not None:
+        band_chr_pl = list(band_chr_pl) + list(chrom_to_kept)
+
+    band_chr_pl = list(set(band_chr_pl))
     base_shift = make_shift_dict(band_chr_pl)
+
+    total_len = 0
+    for chr_id, chr_shift in base_shift.items():
+        chr_id = 'chr{}'.format(chr_id)
+        total_len += CHROM_LEN_GRCH37[chr_id]
+        print("Chosen chr: {: >6}. Shift: {: >12}. Chr length: {: >12}."
+              .format(chr_id, chr_shift, CHROM_LEN_GRCH37[chr_id]))
+
+    print("Total length: {: 12}".format(total_len))
 
     qry_str = '{} in {}'.format(chr_col, list(band_chr_pl))
     sep = fmt_dict.get(output_fmt, ' ')

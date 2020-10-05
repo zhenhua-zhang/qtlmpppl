@@ -15,6 +15,12 @@ import scipy.stats as stt
 import matplotlib.pyplot as plt
 import statsmodels.formula.api as smf
 
+try:
+    import rpy2.robjects as robj
+    import rpy2.robjects.packages as rpk
+except:
+    print('No rpy2 is available.')
+
 from sklearn.decomposition import PCA
 
 # Set up a global logger.
@@ -104,8 +110,8 @@ class BoxPlot:
             self.phtp_dtfm = phtp_dtfm.loc[self.phtp_name]
 
         # Load genotype data
-        gntp_dtfm = self._pr_load_file(self.gntp_file, sep=" ", index_col=0)
-        gntp_info_dtfm = self._pr_load_file(self.gntp_info_file, sep=" ", index_col=0)
+        gntp_dtfm = self._pr_load_file(self.gntp_file, index_col=0)
+        gntp_info_dtfm = self._pr_load_file(self.gntp_info_file, index_col=0)
 
         if self.snps_indx is None:
             self.gntp_dtfm = gntp_dtfm
@@ -176,7 +182,7 @@ class BoxPlot:
                 axes.set_xticklabels(xtick_labels)
 
                 fig_name = ".".join(["boxplot", phtp, gntp_code, svfmt])
-                fig_name = self.output_dir.strip("/") + "/" + fig_name
+                fig_name = self.output_dir + "/" + fig_name
 
                 fig = axes.get_figure()
                 fig.savefig(fig_name, width=width, height=height)
@@ -490,6 +496,64 @@ class PreProcess:
             self.pcor_dtfm.to_csv(pcorr_mtrx_name, sep=sep, index=True)
 
         return self
+
+
+class QTLMapping:
+    '''A wrapper of R package MatrixEQTL.
+    '''
+    def __init__(self, phtp=None, gntp=None, cvrt=None,
+                 output_pref="./"):
+        rpk.importr('MatrixEQTL')
+
+        self.gntp = self._make_sliced_data(gntp)
+        self.phtp = self._make_sliced_data(phtp)
+        self.cvrt = self._make_sliced_data(cvrt)
+
+        self.output_pref = output_pref
+
+    def _load_dtfms(self):
+        pass
+
+    def _make_sliced_data(self, data):
+        return ''
+
+    def _matrix_eqtl_engine(self, optfn=None, pv_opt_thrd=None, use_model=None):
+        if use_model is None:
+            use_model = robj.r['modelLINEAR']
+
+        if pv_opt_thrd is None:
+            pv_opt_thrd = 0.05
+
+        err_cov = robj.r['numeric']()
+        matrix_eqtl_engine = robj.r['Matrix_eQTL_engine']
+        matrix_eqtl_engine(
+            snps=self.gntp, gene=self.phtp, cvrt=self.cvrt,
+            output_file_name=optfn, pvOutputThreshold=pv_opt_thrd,
+            useModel=use_model, errorCovariance=err_cov, verbose=False,
+            pvalue_hist=False, min_pv_by_genesnp=True)
+
+    def _estimate_dispersoin(self):
+        pass
+
+    def map_qtls(self, optfn=None, pv_opt_thrd=0.05, use_model=None):
+        self._matrix_eqtl_engine(None, None)
+
+        return self
+
+    def draw_qq_plot(self):
+        return self
+
+    def draw_manhattan_plot(self):
+        return self
+
+    def save_results(self, output_path):
+        return self
+
+
+class LocusZoom:
+    '''Draw locus zoom plot.'''
+    def __init__(self):
+        pass
 
 
 class CollectAndReportSNP:
