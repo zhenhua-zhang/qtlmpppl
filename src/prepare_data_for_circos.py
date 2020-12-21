@@ -44,6 +44,26 @@ import pandas as pd
 
 from qmutils import CHROM_LEN_GRCH37
 
+cell_subset_dict = {
+    "CD45": "Leukcoytes",
+    "M": "Monocytes",
+    "L": "Lymphocytes",
+    "CD4": "CD4p",
+    "RApR7p": "CD4pNaive",
+    "RAnR7p": "CD4pCM",
+    "mTreg": "CD4pmTreg",
+    "nTreg": "CD4pnTreg",
+    "TEM": "CD4pTEM",
+    "RAnR7n": "CD4pEM",
+    "RApR7n": "CD4pTEMRA",
+    "CD8": "CD8p",
+    "Naive_CD8": "CD8pNaive",
+    "CM_CD8": "CD8pCM",
+    "EM_CD8": "CD8pTEM",
+    "RAnR7n_EM_CD8": "CD8pEM",
+    "RApR7n_EM_CD8": "CD8pTEMRA",
+}
+
 
 def getopt():
     '''Prepare data for Circos.
@@ -92,10 +112,11 @@ def update_record(row, shift_dict, index, trait_func=None):
 def update_trait_name(trait):
     '''Update trait name.
     '''
-    return trait.replace('Pgated_CCR5P_', '') \
+    trait_name = trait.replace('Pgated_CCR5P_', '') \
             .replace('GM_CCR5P_', '') \
             .replace('_log10', '') \
             .replace('_ivrk', '')
+    return cell_subset_dict.get(trait_name, "NULL")
 
 
 def main():
@@ -126,7 +147,7 @@ def main():
     band_chr_pl = circos_dtfm.query(qry_str)[chr_col].drop_duplicates()
 
     if chrom_to_kept is not None:
-        band_chr_pl = list(band_chr_pl) + list(chrom_to_kept)
+        band_chr_pl = list(chrom_to_kept)
 
     band_chr_pl = list(set(band_chr_pl))
     base_shift = make_shift_dict(band_chr_pl)

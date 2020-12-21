@@ -34,7 +34,7 @@ def main():
 
     pre_processer = PreProcess(conf_file, phtp_file, cvrt_file)
     pre_processer.init() \
-            .encode_sex(skip=True) \
+            .encode_sex() \
             .transform() \
             .check_outliers(skip=True) \
             .mask_outliers() \

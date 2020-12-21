@@ -4,8 +4,11 @@
         "phtp_list": [],
         "cvrt_file": "",
         "cvrt_list": [],
-        "sample_id_col": "",
-        "sample_idx": "",
+        "smpl_id_col": "",
+        "smpl_idx": null,
+        "smpl_list": null,
+        "smpl_blck_list": null,
+        "sex_col": null,
         "trans_dict": {
             "log10": [],
             "log2": [],

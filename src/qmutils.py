@@ -19,7 +19,7 @@ try:
     import rpy2.robjects as robj
     import rpy2.robjects.packages as rpk
 except:
-    print('No rpy2 is available.')
+    pass
 
 from sklearn.decomposition import PCA
 
@@ -50,6 +50,28 @@ CHROM_LEN_GRCH37 = {
 }
 
 
+CELL_SUBSET_DICT = {
+    "CD45": "Leukocytes",
+    "M": "Monocytes",
+    "L": "Lymphocytes",
+    "CD4": "CD4+",
+    "RApR7p": "CD4+Naive",
+    "RAnR7p": "CD4+CM",
+    "mTreg": "CD4+mTreg",
+    "nTreg": "CD4+nTreg",
+    "TEM": "CD4+TEM",
+    "RAnR7n": "CD4+EM",
+    "RApR7n": "CD4+TEMRA",
+    "CD8": "CD8+",
+    "Naive_CD8": "CD8+Naive",
+    "CM_CD8": "CD8+CM",
+    "EM_CD8": "CD8+TEM",
+    "RAnR7n_EM_CD8": "CD8+EM",
+    "RApR7n_EM_CD8": "CD8+TEMRA",
+}
+
+
+
 class DataSet:
     """A class to handle data set.
     """
@@ -69,14 +91,22 @@ class BoxPlot:
     """Draw boxplot.
     """
     def __init__(self, phtp_file, phtp_name, gntp_file, snps_indx, gntp_info_file,
-                 cvrt_file=None, cvrt_name=None, output_dir="./"):
+                 cvrt_file=None, cvrt_name=None, effect_allele=None,
+                 y_info=None, output_dir="./"):
         self.phtp_file = phtp_file
         self.phtp_name = phtp_name
+
+        if y_info is None:
+            self.y_info = self.phtp_name
+        else:
+            self.y_info = y_info
+
         self.gntp_file = gntp_file
         self.snps_indx = snps_indx
         self.gntp_info_file = gntp_info_file
         self.cvrt_file = cvrt_file
         self.cvrt_name = cvrt_name
+        self.effect_allele = effect_allele
 
         self.output_dir = output_dir
 
@@ -146,7 +176,11 @@ class BoxPlot:
     def _pr_encode_gntp(self):
         for gntp in self.snps_indx:
             eff, alt = self.gntp_info_dtfm.loc[gntp, ["EffectAllele", "AlternativeAllele"]]
-            dosage2code_dict = {0: alt + alt, 1: alt + eff, 2: eff + eff}
+
+            dosage2code_dict = {0: eff + eff, 1: eff + alt, 2: alt + alt}
+            if self.effect_allele == "EffectAllele":
+                dosage2code_dict = {0: alt + alt, 1: alt + eff, 2: eff + eff}
+
             self.dtfm.loc[gntp + "_code"] = self.dtfm \
                     .loc[gntp, :] \
                     .apply(lambda x: dosage2code_dict[round(x)])
@@ -158,38 +192,55 @@ class BoxPlot:
 
     def _pr_draw_boxplots(self, svfmt="pdf", **kwargs):
         sb.set(style="ticks")
-        width = kwargs.pop("width") if "width" in kwargs else 10
-        height = kwargs.pop("height") if "height" in kwargs else 10
+        width = kwargs.pop("width") if "width" in kwargs else 6
+        height = kwargs.pop("height") if "height" in kwargs else 8
 
-        for phtp in self.phtp_name:
+        for phtp, y_info in zip(self.phtp_name, self.y_info):
             for gntp in self.snps_indx:
                 gntp_code = gntp + "_code"
                 dtfm = self.dtfm.loc[[phtp, gntp_code]]
-
                 chrom, pos, eff, alt, *_ = self.gntp_info_dtfm.loc[gntp, ]
-                allele_code = [alt + alt, alt + eff, eff + eff]
 
-                allele_count = dtfm.loc[gntp_code].value_counts()
-                xtick_labels = ["{}({})".format(aa, allele_count[aa]) for aa in allele_code if aa in allele_count]
-                allele_code = [aa for aa in allele_code if aa in allele_count]
+                if self.effect_allele == "EffectAllele":
+                    allele_pair = [alt, eff]
+                    allele_order = [alt + alt, alt + eff, eff + eff]
+                else:
+                    allele_pair = [eff, alt]
+                    allele_order = [eff + eff, eff + alt, alt + alt]
 
-                axes = sb.boxplot(x=gntp_code, y=phtp, data=dtfm.transpose(), width=0.4, order=allele_code)
-                axes = sb.swarmplot(x=gntp_code, y=phtp, data=dtfm.transpose(), color=".5", order=allele_code)
+                allele_count = (dtfm.loc[gntp_code]
+                                .value_counts()
+                                .reindex(allele_order)
+                                .fillna(0))
 
-                axes.set_title("{}({})".format(phtp, gntp))
-                axes.set_xlabel("{}({},{},{}>{})".format(gntp, chrom, pos, alt, eff))
-                axes.set_ylabel(phtp)
+                xtick_labels = ['{} ({})'.format(aa, cc)
+                                for aa, cc in zip(allele_order, allele_count)]
+
+                order_dict = dict(zip(allele_order, range(len(allele_count))))
+                dtfm = dtfm.transpose().sort_values(by=gntp_code, key=lambda x: x.map(order_dict))
+
+                axes = sb.boxplot(x=gntp_code, y=phtp, data=dtfm, width=0.4, color='0.9')#, order=allele_code)
+                axes = sb.swarmplot(x=gntp_code, y=phtp, data=dtfm, color="0", alpha=0.8)#, order=allele_code)
+
+                axes.spines["top"].set_visible(False)
+                axes.spines["right"].set_visible(False)
+
+                axes.set_title("Boxplot for {}".format(gntp))
+                axes.set_xlabel("Genptype (chr:{}, pos:{}, allele:{}>{})".format(chrom, pos, *allele_pair))
+                axes.set_ylabel(y_info)
                 axes.set_xticklabels(xtick_labels)
 
-                fig_name = ".".join(["boxplot", phtp, gntp_code, svfmt])
-                fig_name = self.output_dir + "/" + fig_name
+                fig_name = ".".join(["boxplot", phtp, gntp, svfmt])
+                fig_name = self.output_dir + "/" + fig_name.replace('+', 'p')
 
                 fig = axes.get_figure()
-                fig.savefig(fig_name, width=width, height=height)
+                fig.set_figheight(height)
+                fig.set_figwidth(width)
+                fig.savefig(fig_name)
 
                 self._pr_clear()
 
-    def init(self):
+    def init(self,):
         """Init."""
         self._pr_make_dtfm()
         self._pr_encode_gntp()
@@ -220,13 +271,17 @@ class PreProcess:
         self.phtp_list = None
         self.phtp_dtfm = None
         self.phtp_trans_dict = None
-        self.pntp_transed_name_list = None
+        self.phtp_transed_name_list = None
 
-        self.sample_idx = None
-        self.sample_id_col = None
+        self.smpl_idx = None
+        self.smpl_id_col = None
+        self.smpl_list = None
+        self.smpl_blck_list = None
 
         self.cvrt_list = None
         self.cvrt_dtfm = None
+
+        self.sex_col = None
 
         self.pcor_dtfm = None
 
@@ -272,41 +327,50 @@ class PreProcess:
         self.transpose = self.configs["preprocess"]["transpose"]
         self.output_prefix = self.configs["preprocess"]["output_prefix"]
         self.stdv_times = self.configs["preprocess"]["stdv_times"]
-        self.sample_id_col = self.configs["preprocess"]["sample_id_col"]
+        self.smpl_id_col = self.configs["preprocess"]["smpl_id_col"]
+        self.sex_col = self.configs["preprocess"]["sex_col"]
 
     def _pr_parse_sample_id(self):
-        self.sample_idx = self.configs["preprocess"]["sample_idx"]
+        self.smpl_idx = self.configs["preprocess"]["smpl_idx"]
 
-        if self.sample_idx is not None:
-            sample_idx = []
-            for idx_range in self.sample_idx.split(","):
+        if self.smpl_idx is not None:
+            smpl_idx = []
+            for idx_range in self.smpl_idx.split(","):
                 if idx_range:
                     if "-" in idx_range:
                         start, stop = idx_range.split("-")
-                        sample_idx.extend(list(range(int(start), int(stop))))
+                        smpl_idx.extend(list(range(int(start), int(stop))))
                     else:
-                        sample_idx.append(int(idx_range))
+                        smpl_idx.append(int(idx_range))
                 else:
                     logger.debug("Empty range of sample index")
-            self.sample_idx = sample_idx
+            self.smpl_idx = smpl_idx
 
         self.smpl_list = self.configs["preprocess"]["smpl_list"]
+        self.smpl_blck_list = self.configs["preprocess"]["smpl_blck_list"]
 
     def _pr_load_dtfm(self, **kwargs):
         sep = kwargs.pop("sep") if "sep" in kwargs else "\t"
 
         phtp_dtfm = pd.read_csv(self.phtp_file, sep=sep, **kwargs)
-        if self.cvrt_file is None:
+        if self.cvrt_file is None or self.cvrt_file == "":
             self.dataframe = phtp_dtfm
         else:
             cvrt_dtfm = pd.read_csv(self.cvrt_file, sep=sep, **kwargs)
-            self.dataframe = pd.merge(phtp_dtfm, cvrt_dtfm, on=self.sample_id_col)
+            self.dataframe = pd.merge(phtp_dtfm, cvrt_dtfm, how="outer", on=self.smpl_id_col)
 
-        if self.sample_idx is not None:
-            self.dataframe = self.dataframe.loc[self.sample_idx, :]
+        if self.smpl_idx is not None and self.smpl_idx != "":
+            self.dataframe = self.dataframe.loc[self.smpl_idx, :]
+            self.dataframe.index = range(len(self.smpl_idx))
 
+        smpl_list = self.smpl_list
+        smpl_id_col = self.smpl_id_col
+        smpl_blck_list = self.smpl_blck_list
         if self.smpl_list is not None:
-            self.dataframe = self.dataframe.loc[self.dataframe[self.sample_id_col].isin(self.smpl_list), :]
+            self.dataframe = self.dataframe.loc[self.dataframe[smpl_id_col].isin(smpl_list), :]
+
+        if self.smpl_blck_list is not None:
+            self.dataframe = self.dataframe.loc[self.dataframe[smpl_id_col].isin(smpl_blck_list) == False, :]
 
     @staticmethod
     def _inverse_rank(raw_list):
@@ -336,6 +400,11 @@ class PreProcess:
         if skip:
             return self
 
+        if sex_col is None:
+            if self.sex_col is None:
+                return self
+            sex_col = self.sex_col
+
         mapping = {"Male": 0, "Female": 1} if mapping is None else mapping
         self.dataframe[sex_col] = self.dataframe[sex_col].apply(lambda x: mapping[x])
 
@@ -353,23 +422,23 @@ class PreProcess:
             return self
 
         phtp_trans_dict = self.phtp_trans_dict
-        pntp_to_be_transed = phtp_trans_dict.keys()
-        if pntp_to_be_transed:
-            pntp_transed_dtfm = self.dataframe \
-                    .loc[:, pntp_to_be_transed] \
-                    .transform(phtp_trans_dict, axis=0)
+        phtp_tobe_transed = phtp_trans_dict.keys()
+        if phtp_tobe_transed:
+            phtp_transed_dtfm = (self.dataframe
+                                 .loc[:, phtp_tobe_transed]
+                                 .transform(phtp_trans_dict, axis=0))
 
-            pntp_transed_name_list = []
-            for col_name in pntp_transed_dtfm.columns:
+            phtp_transed_name_list = []
+            for col_name in phtp_transed_dtfm.columns:
                 tran_func = phtp_trans_dict[col_name]
                 func_name = tran_func if isinstance(tran_func, str) else "ivrk"
-                pntp_transed_name_list.append(col_name + "_" + func_name)
+                phtp_transed_name_list.append(col_name + "_" + func_name)
 
-            pntp_transed_dtfm.columns = pntp_transed_name_list
-            self.dataframe[pntp_transed_name_list] = pntp_transed_dtfm
-            self.pntp_transed_name_list = pntp_transed_name_list
+            phtp_transed_dtfm.columns = phtp_transed_name_list
+            self.dataframe[phtp_transed_name_list] = phtp_transed_dtfm
+            self.phtp_transed_name_list = phtp_transed_name_list
         else:
-            self.pntp_transed_name_list = []
+            self.phtp_transed_name_list = []
 
         self.dataframe.replace((np.inf, -np.inf), np.nan, inplace=True)
 
@@ -422,10 +491,10 @@ class PreProcess:
         if skip:
             return self
 
-        if self.pntp_transed_name_list is None:
+        if self.phtp_transed_name_list is None:
             pntp_check_dist_list = self.phtp_list
         else:
-            pntp_check_dist_list = self.phtp_list + self.pntp_transed_name_list
+            pntp_check_dist_list = self.phtp_list + self.phtp_transed_name_list
 
         for col_name in pntp_check_dist_list:
             fig, axes = plt.subplots()
@@ -455,11 +524,13 @@ class PreProcess:
         for idx_x, pntp_x in enumerate(x_list):
             for idx_y, pntp_y in enumerate(y_list):
                 if pntp_y != pntp_x:
-                    _pcorr_dtfm = pg.partial_corr(self.dataframe, pntp_x, pntp_y, self.cvrt_list, method=method)
-                    pcorr_mtrx_np[idx_x, idx_y] = _pcorr_dtfm['r']
+                    try:
+                        _pcorr_dtfm = pg.partial_corr(self.dataframe, pntp_x, pntp_y, self.cvrt_list, method=method)
+                        pcorr_mtrx_np[idx_x, idx_y] = _pcorr_dtfm['r']
+                    except AssertionError as err:
+                        pass
 
-        self.pcor_dtfm = pd.DataFrame(pcorr_mtrx_np, index=self.phtp_list,
-                                      columns=self.phtp_list)
+        self.pcor_dtfm = pd.DataFrame(pcorr_mtrx_np, index=self.phtp_list, columns=self.phtp_list)
         pcorr_htmp_name = ".".join([self.output_prefix, "correlation_heatmap", figfmt])
         ctmp_grid = sb.clustermap(self.pcor_dtfm, col_cluster=True, row_cluster=True, cmap="Greens")
         ctmp_grid.fig.savefig(pcorr_htmp_name)
@@ -486,10 +557,10 @@ class PreProcess:
             logger.info("Only ssv, tsv and csv are supported, use tsv by defult")
             dtfm_fmt, sep = "tsv", "\t"
 
-        if self.sample_id_col:
-            self.dataframe.index = self.dataframe.loc[:, self.sample_id_col]
+        if self.smpl_id_col:
+            self.dataframe.index = self.dataframe.loc[:, self.smpl_id_col]
 
-        phtp_tosave_list = [x for x in self.phtp_list if x not in self.phtp_trans_dict] + self.pntp_transed_name_list
+        phtp_tosave_list = [x for x in self.phtp_list if x not in self.phtp_trans_dict] + self.phtp_transed_name_list
         self.phtp_dtfm = self.dataframe.loc[:, phtp_tosave_list]
         phtp_dtfm_name = ".".join([self.output_prefix, "proc_phtp", dtfm_fmt])
 
