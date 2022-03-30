@@ -587,8 +587,8 @@ class PreProcess:
 
 
 class QTLMapping:
-    '''A wrapper of R package MatrixEQTL.
-    '''
+    """A wrapper of R package MatrixEQTL.
+    """
     def __init__(self, phtp=None, gntp=None, cvrt=None,
                  output_pref="./"):
         rpk.importr('MatrixEQTL')
@@ -639,7 +639,7 @@ class QTLMapping:
 
 
 class LocusZoom:
-    '''Draw locus zoom plot.'''
+    """Draw locus zoom plot."""
     def __init__(self):
         pass
 
@@ -681,13 +681,13 @@ class PreapreDataForCircos:
         return dtfm_pl
 
     def prepare(self, **kwargs):
-        '''Preapre dataset.'''
+        """Preapre dataset."""
         self.snps_dtfm = self._merge([self._filter(self._load_snps(flpt, **kwargs)) for flpt in self.fppl])
         return self
 
     def write(self, opt_path, **kwargs):
-        '''Write the dataset to disk.
-        '''
+        """Write the dataset to disk.
+        """
         self.snps_dtfm.to_csv(opt_path, **kwargs)
         return self
 
